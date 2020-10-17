@@ -1,0 +1,1 @@
+stm32_h743vitx_display\startup_stm32h743xx.o: startup_stm32h743xx.s

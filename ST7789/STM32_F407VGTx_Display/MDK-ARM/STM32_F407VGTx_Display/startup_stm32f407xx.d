@@ -1,0 +1,1 @@
+stm32_f407vgtx_display\startup_stm32f407xx.o: startup_stm32f407xx.s

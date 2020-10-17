@@ -1,0 +1,28 @@
+--cpu=Cortex-M4.fp.sp
+"stm32_f407vgtx_display\startup_stm32f407xx.o"
+"stm32_f407vgtx_display\st7789.o"
+"stm32_f407vgtx_display\fonts.o"
+"stm32_f407vgtx_display\main.o"
+"stm32_f407vgtx_display\stm32f4xx_it.o"
+"stm32_f407vgtx_display\stm32f4xx_hal_msp.o"
+"stm32_f407vgtx_display\stm32f4xx_hal_spi.o"
+"stm32_f407vgtx_display\stm32f4xx_hal_rcc.o"
+"stm32_f407vgtx_display\stm32f4xx_hal_rcc_ex.o"
+"stm32_f407vgtx_display\stm32f4xx_hal_flash.o"
+"stm32_f407vgtx_display\stm32f4xx_hal_flash_ex.o"
+"stm32_f407vgtx_display\stm32f4xx_hal_flash_ramfunc.o"
+"stm32_f407vgtx_display\stm32f4xx_hal_gpio.o"
+"stm32_f407vgtx_display\stm32f4xx_hal_dma_ex.o"
+"stm32_f407vgtx_display\stm32f4xx_hal_dma.o"
+"stm32_f407vgtx_display\stm32f4xx_hal_pwr.o"
+"stm32_f407vgtx_display\stm32f4xx_hal_pwr_ex.o"
+"stm32_f407vgtx_display\stm32f4xx_hal_cortex.o"
+"stm32_f407vgtx_display\stm32f4xx_hal.o"
+"stm32_f407vgtx_display\stm32f4xx_hal_exti.o"
+"stm32_f407vgtx_display\stm32f4xx_hal_tim.o"
+"stm32_f407vgtx_display\stm32f4xx_hal_tim_ex.o"
+"stm32_f407vgtx_display\system_stm32f4xx.o"
+--library_type=microlib --strict --scatter "STM32_F407VGTx_Display\STM32_F407VGTx_Display.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "STM32_F407VGTx_Display.map" -o STM32_F407VGTx_Display\STM32_F407VGTx_Display.axf
