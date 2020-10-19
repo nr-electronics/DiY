@@ -1,3 +1,6 @@
+ ## ФОТО ГОТОВОГО ИЗДЕЛИЯ 240*240:
+ 
+
 # ST7789-STM32
 Using STM32's Hardware SPI to drive a ST7789 based IPS display.
 
