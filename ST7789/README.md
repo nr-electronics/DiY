@@ -1,5 +1,6 @@
  ## ФОТО ГОТОВОГО ИЗДЕЛИЯ 240*240:
- 
+![](https://github.com/nr-electronics/DiY/blob/master/ST7789/images/TOP.JPG)
+![](https://github.com/nr-electronics/DiY/blob/master/ST7789/images/Bottom.JPG)
 
 # ST7789-STM32
 Using STM32's Hardware SPI to drive a ST7789 based IPS display.
