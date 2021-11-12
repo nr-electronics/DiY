@@ -27,9 +27,11 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "st7789.h"
-
 #include "bitmap.h"
 #include "fonts.h"
+#include "bmp.h"
+
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,6 +52,9 @@
 
 /* USER CODE BEGIN PV */
 FATFS fatfs;
+DIR DirInfo;
+FILINFO FileInfo;
+char media_folder[] = "/media";
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -201,18 +206,63 @@ int main(void)
 
   FRESULT res;
 
+//--
   HAL_Delay(2000);
   ST7789_Clear();
-  ST7789_print( 0, 0, RGB565(255, 255, 255) , RGB565(0, 0, 0) , 1, &Font_11x18, 1, utf8rus("Mount SD .. ") );
+  ST7789_print( 0, 0, RGB565(255, 255, 255) , RGB565(0, 0, 0) , 1, &Font_11x18, 1, "Mount SD .. " );
   res = f_mount(&fatfs, SDPath, 1);
   if(res == FR_OK){
-    ST7789_print( 150, 0, RGB565(255, 255, 255) , RGB565(0, 0, 0) , 1, &Font_11x18, 1, utf8rus("OK") );
+    ST7789_print( 150, 0, RGB565(255, 255, 255) , RGB565(0, 0, 0) , 1, &Font_11x18, 1, "OK" );
   }
   else{
-    ST7789_print( 150, 0, RGB565(255, 255, 255) , RGB565(0, 0, 0) , 1, &Font_11x18, 1, utf8rus("fail") );
+    ST7789_print( 150, 0, RGB565(255, 255, 255) , RGB565(0, 0, 0) , 1, &Font_11x18, 1, "fail" );
     while(1)
     {}
   }
+//--
+  ST7789_print( 0, 20, RGB565(255, 255, 255) , RGB565(0, 0, 0) , 1, &Font_11x18, 1, "Open dir:" );
+  ST7789_print( 150, 20, RGB565(255, 255, 255) , RGB565(0, 0, 0) , 1, &Font_11x18, 1, media_folder);
+  res = f_chdir(media_folder);
+  if(res == FR_OK){
+    ST7789_print( 0, 40, RGB565(255, 255, 255) , RGB565(0, 0, 0) , 1, &Font_11x18, 1, "OK" );
+  }
+  else{
+    ST7789_print( 0, 40, RGB565(255, 255, 255) , RGB565(0, 0, 0) , 1, &Font_11x18, 1, "fail" );
+    while(1)
+    {}
+  }
+//--
+  while (1)
+    {
+      /* Получаем информацию о содержимом каталога */
+      res = f_opendir(&DirInfo, "");
+
+      while (1)
+      {
+        res = f_readdir(&DirInfo, &FileInfo);
+        if (FileInfo.fname[0] == 0)// если нет файлов
+          break;
+        /* Находим имя файла */
+        char* dot; //указатель на точку в имени файла
+        if((dot = strrchr(FileInfo.fname, '.')) == 0) //если нет точки в имени
+          break;
+
+        if(strncmp(dot,".bmp",4) == 0)
+        {
+          DrawBMPImageFile(FileInfo.fname, 0, 0);
+          //ST7789_print( 150, 100, RGB565(255, 255, 255) , RGB565(0, 0, 0) , 1, &Font_11x18, 1, FileInfo.fname);
+        }
+        HAL_Delay(1000);
+      }
+      f_closedir(&DirInfo);
+    }
+
+
+
+
+
+
+
 
 
   /* USER CODE END 2 */
