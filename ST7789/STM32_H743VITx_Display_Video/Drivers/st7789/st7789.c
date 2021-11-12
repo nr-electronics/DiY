@@ -55,9 +55,11 @@ static const uint8_t init_cmds[] = {
 	  
 	  
 //==============================================================================
-	  
-	  
-	  
+
+static void ST7789_ExecuteCommandList(const uint8_t *addr);
+static void ST7789_ColumnSet(uint16_t ColumnStart, uint16_t ColumnEnd);
+static void ST7789_RowSet(uint16_t RowStart, uint16_t RowEnd);
+
 //==============================================================================
 // Процедура инициализации дисплея
 //==============================================================================

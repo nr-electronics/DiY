@@ -19,6 +19,8 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "fatfs.h"
+#include "sdmmc.h"
 #include "spi.h"
 #include "gpio.h"
 
@@ -47,7 +49,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+FATFS fatfs;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -96,6 +98,8 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_SPI2_Init();
+  MX_SDMMC1_SD_Init();
+  MX_FATFS_Init();
   /* USER CODE BEGIN 2 */
 
   // включаем подсветку дисплея
@@ -194,6 +198,23 @@ int main(void)
   // инверсия цветов 0-вкл  1-выкл
   //ST7789_InversionMode(1);
 
+
+  FRESULT res;
+
+  HAL_Delay(2000);
+  ST7789_Clear();
+  ST7789_print( 0, 0, RGB565(255, 255, 255) , RGB565(0, 0, 0) , 1, &Font_11x18, 1, utf8rus("Mount SD .. ") );
+  res = f_mount(&fatfs, SDPath, 1);
+  if(res == FR_OK){
+    ST7789_print( 150, 0, RGB565(255, 255, 255) , RGB565(0, 0, 0) , 1, &Font_11x18, 1, utf8rus("OK") );
+  }
+  else{
+    ST7789_print( 150, 0, RGB565(255, 255, 255) , RGB565(0, 0, 0) , 1, &Font_11x18, 1, utf8rus("fail") );
+    while(1)
+    {}
+  }
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -224,6 +245,9 @@ void SystemClock_Config(void)
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE0);
 
   while(!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {}
+  /** Macro to configure the PLL clock source
+  */
+  __HAL_RCC_PLL_PLLSOURCE_CONFIG(RCC_PLLSOURCE_HSE);
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
