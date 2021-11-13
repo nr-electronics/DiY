@@ -252,7 +252,7 @@ int main(void)
           DrawBMPImageFile(FileInfo.fname, 0, 0);
           //ST7789_print( 150, 100, RGB565(255, 255, 255) , RGB565(0, 0, 0) , 1, &Font_11x18, 1, FileInfo.fname);
         }
-        HAL_Delay(1000);
+//        HAL_Delay(1000);
       }
       f_closedir(&DirInfo);
     }
