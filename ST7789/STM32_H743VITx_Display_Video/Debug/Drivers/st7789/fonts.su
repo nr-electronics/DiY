@@ -1,0 +1,2 @@
+fonts.c:858:7:FONTS_GetStringSize	16	static
+fonts.c:881:7:utf8rus	40	static
