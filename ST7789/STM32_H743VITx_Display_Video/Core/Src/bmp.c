@@ -27,7 +27,7 @@ IMGRESULT DrawBMPImageFile(const char* fname, uint16_t x_pos, uint16_t y_pos)
     return IMG_FIL_ERR;
   }
 
-  res = f_read(&img_file, header, (UINT)BMP_HEADER_SIZE, &bytesRead);
+  res = f_read(&img_file, (void*)header, (UINT)BMP_HEADER_SIZE, &bytesRead);
   if (res != FR_OK){
     f_close(&img_file);
     return IMG_FIL_ERR;
@@ -49,7 +49,9 @@ IMGRESULT DrawBMPImageFile(const char* fname, uint16_t x_pos, uint16_t y_pos)
 
   //сохраняем значения ширины и высоты изображения
   uint32_t imageWidth = BmpFileInfo->biWidth;
-  uint32_t imageHeight = BmpFileInfo->biHeight;
+  int32_t  imageHeight = BmpFileInfo->biHeight;
+  if(imageHeight<0)
+    imageHeight *= -1;
 
   //передвинем указатель на начало битового поля
   res = f_lseek(&img_file, BmpFileHaeder->bfOffBits);//imageOffset);
