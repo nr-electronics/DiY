@@ -50,8 +50,11 @@ IMGRESULT DrawBMPImageFile(const char* fname, uint16_t x_pos, uint16_t y_pos)
   //сохраняем значения ширины и высоты изображения
   uint32_t imageWidth = BmpFileInfo->biWidth;
   int32_t  imageHeight = BmpFileInfo->biHeight;
-  if(imageHeight<0)
+  int8_t direction = -1;
+  if(imageHeight<0){
     imageHeight *= -1;
+    direction = 1;
+  }
 
   //передвинем указатель на начало битового поля
   res = f_lseek(&img_file, BmpFileHaeder->bfOffBits);//imageOffset);
@@ -67,8 +70,22 @@ IMGRESULT DrawBMPImageFile(const char* fname, uint16_t x_pos, uint16_t y_pos)
   //Массив байт для одной горизонтальной линии, для загрузки в дисплей
   static uint16_t PixBuff[240];
 
-  /* Рисуем строки снизу вверх */
-  for (uint32_t y = imageHeight+y_pos-1; y != y_pos-1; y--)
+
+  uint32_t y_start;
+  uint32_t y_end;
+  if(direction == -1){
+    /* Рисуем строки снизу вверх */
+    y_start = imageHeight+y_pos-1;
+    y_end = y_pos-1;
+  }
+  else{
+    /* Рисуем строки сверху вниз вверх */
+    y_start = y_pos-1;
+    y_end = imageHeight+y_pos-1;
+  }
+
+  /* Рисуем строки */
+  for (uint32_t y=y_start; y!=y_end; y+=direction)
   {
     res = f_read(&img_file, imageRow, (imageWidth * 3 + 3) & ~3, &bytesRead);
     if (res != FR_OK)
