@@ -20,6 +20,7 @@ typedef enum {
    IMG_FIL_ERR,        /* 1: Ошибка открытия файла */
    IMG_NOT_BMP,        /* 2: Это не BMP файл */
    IMG_UNKNOWN_FORMAT, /* 3: Неизвестный формат */
+   NOT_ENOUGH_SPACE    /* 4: Недостаточно места */
  } IMGRESULT;
 
 

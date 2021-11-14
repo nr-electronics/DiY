@@ -13,7 +13,8 @@
 FIL img_file;
 
 //Массив байт заголовка BMP файла
-static uint8_t header[BMP_HEADER_SIZE];
+//static uint8_t header[BMP_HEADER_SIZE];
+void* header;
 static BitMapFileHeader* BmpFileHaeder;
 static BitMapInfoHeader* BmpFileInfo;
 
@@ -27,14 +28,18 @@ IMGRESULT DrawBMPImageFile(const char* fname, uint16_t x_pos, uint16_t y_pos)
     return IMG_FIL_ERR;
   }
 
-  res = f_read(&img_file, (void*)header, (UINT)BMP_HEADER_SIZE, &bytesRead);
-  if (res != FR_OK){
-    f_close(&img_file);
-    return IMG_FIL_ERR;
-  }
+  void *bmp_file_bufer = malloc(img_file.obj.objsize);
+  if(bmp_file_bufer == NULL)
+    return NOT_ENOUGH_SPACE;
 
-  BmpFileHaeder = (void*)header;
-  BmpFileInfo   = (void*)(&header[0x0E]);
+  res = f_read(&img_file, (void*)bmp_file_bufer, img_file.obj.objsize, &bytesRead);
+  if (res != FR_OK || bytesRead != img_file.obj.objsize){
+      f_close(&img_file);
+      return IMG_FIL_ERR;
+    }
+
+  BmpFileHaeder = bmp_file_bufer;
+  BmpFileInfo   = bmp_file_bufer + 0x0E;
 
   if ( BmpFileHaeder->bfType != 0x4D42 ){
     f_close(&img_file);
@@ -57,15 +62,15 @@ IMGRESULT DrawBMPImageFile(const char* fname, uint16_t x_pos, uint16_t y_pos)
   }
 
   //передвинем указатель на начало битового поля
-  res = f_lseek(&img_file, BmpFileHaeder->bfOffBits);//imageOffset);
-  if(res != FR_OK){
-    f_close(&img_file);
-    return IMG_FIL_ERR;
-  }
-
+//  res = f_lseek(&img_file, BmpFileHaeder->bfOffBits);//imageOffset);
+//  if(res != FR_OK){
+//    f_close(&img_file);
+//    return IMG_FIL_ERR;
+//  }
+  uint8_t* pix_pointer = (uint8_t*) (bmp_file_bufer + BmpFileHaeder->bfOffBits);
 
   //Массив байт для чтения из флеши
-  static uint8_t imageRow[(240 * 3 + 3) & ~3];
+  //static uint8_t imageRow[(240 * 3 + 3) & ~3];
 
   //Массив байт для одной горизонтальной линии, для загрузки в дисплей
   static uint16_t PixBuff[240];
@@ -87,23 +92,23 @@ IMGRESULT DrawBMPImageFile(const char* fname, uint16_t x_pos, uint16_t y_pos)
   /* Рисуем строки */
   for (uint32_t y=y_start; y!=y_end; y+=direction)
   {
-    res = f_read(&img_file, imageRow, (imageWidth * 3 + 3) & ~3, &bytesRead);
-    if (res != FR_OK)
-    {
-      f_close(&img_file);
-      return IMG_FIL_ERR;
-    }
+//    res = f_read(&img_file, imageRow, (imageWidth * 3 + 3) & ~3, &bytesRead);
+//    if (res != FR_OK)
+//    {
+//      f_close(&img_file);
+//      return IMG_FIL_ERR;
+//    }
 
     //Подготавливаем буфер строки картинки для вывода
     //перепаковка из формата BMP24 бита в формат RGB565
     //imageRow и PixBuff ссылаются на один буфер, но так как результат перепаковки уменьшается,
     //то так поступить можно, уменьшая затраченную памть
-    uint32_t rowIdx = 0;
+    uint8_t* ppointer = (uint8_t*)pix_pointer;
     for (uint32_t x = 0; x < imageWidth; x++)
     {
-      uint8_t b = imageRow[rowIdx++];
-      uint8_t g = imageRow[rowIdx++];
-      uint8_t r = imageRow[rowIdx++];
+      uint8_t b = *ppointer++;
+      uint8_t g = *ppointer++;
+      uint8_t r = *ppointer++;
       PixBuff[x] = RGB565(r, g, b);
 
       //свапаем пиксель
@@ -113,8 +118,12 @@ IMGRESULT DrawBMPImageFile(const char* fname, uint16_t x_pos, uint16_t y_pos)
     }
     // Рисуем полученную строку
     ST7789_DrawImage( x_pos, y, imageWidth, 1, PixBuff );
+
+
+    pix_pointer += (imageWidth * 3 + 3) & ~3;
   }
 
+  free(bmp_file_bufer);
   f_close(&img_file);
   return IMG_OK;
 }
