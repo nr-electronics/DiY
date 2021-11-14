@@ -339,7 +339,14 @@ __inline void ST7789_SendDataMASS(uint8_t* buff, size_t buff_size){
 	
 	//-- если захотим переделать под HAL ------------------
 	#ifdef ST7789_SPI_HAL
-		HAL_SPI_Transmit(&ST7789_SPI_HAL, buff, buff_size, HAL_MAX_DELAY);
+	  uint16_t max_hal_spi_size = 0xffff;
+	  while(buff_size > max_hal_spi_size)
+	  {
+	    HAL_SPI_Transmit(&ST7789_SPI_HAL, buff, (uint16_t)max_hal_spi_size, HAL_MAX_DELAY);
+	    buff += max_hal_spi_size;
+	    buff_size -= max_hal_spi_size;
+	  }
+		HAL_SPI_Transmit(&ST7789_SPI_HAL, buff, (uint16_t)buff_size, HAL_MAX_DELAY);
 	#endif
 	//-----------------------------------------------------
 	

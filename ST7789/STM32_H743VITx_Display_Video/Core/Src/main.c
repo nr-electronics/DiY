@@ -32,6 +32,7 @@
 #include "bmp.h"
 
 #include <string.h>
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -239,6 +240,7 @@ int main(void)
 
       while (1)
       {
+        uint32_t t1 = HAL_GetTick();
         res = f_readdir(&DirInfo, &FileInfo);
         if (FileInfo.fname[0] == 0)// если нет файлов
           break;
@@ -252,6 +254,10 @@ int main(void)
           DrawBMPImageFile(FileInfo.fname, 0, 0);
           //ST7789_print( 150, 100, RGB565(255, 255, 255) , RGB565(0, 0, 0) , 1, &Font_11x18, 1, FileInfo.fname);
         }
+        uint32_t t2 = HAL_GetTick();
+            char text[64]; //закомментировать, если не нужна отладка
+            sprintf(text,"Time: %dms",(int)(t2-t1));
+            ST7789_print( 0, 0, RGB565(0, 255, 255) , RGB565(0, 0, 0) , 1, &Font_11x18, 1, text);
 //        HAL_Delay(1000);
       }
       f_closedir(&DirInfo);
