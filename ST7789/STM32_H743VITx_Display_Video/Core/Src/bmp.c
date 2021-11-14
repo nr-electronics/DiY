@@ -33,6 +33,7 @@ IMGRESULT DrawBMPImageFile(const char* fname, uint16_t x_pos, uint16_t y_pos)
     return NOT_ENOUGH_SPACE;
 
   res = f_read(&img_file, (void*)bmp_file_bufer, img_file.obj.objsize, &bytesRead);
+
   if (res != FR_OK || bytesRead != img_file.obj.objsize){
       f_close(&img_file);
       return IMG_FIL_ERR;
@@ -89,7 +90,8 @@ IMGRESULT DrawBMPImageFile(const char* fname, uint16_t x_pos, uint16_t y_pos)
     //перепаковка из формата BMP24 бита в формат RGB565
     uint8_t* ppointer = (uint8_t*)pix_pointer;
     uint16_t* PixBuff = (uint16_t*)bmp_frame_bufer + y*imageWidth;
-    for (uint32_t x = 0; x < imageWidth; x++)
+    uint16_t* PixBuff_end = PixBuff + imageWidth;
+    while (PixBuff < PixBuff_end)
     {
       uint8_t b = *ppointer++;
       uint8_t g = *ppointer++;
@@ -97,9 +99,8 @@ IMGRESULT DrawBMPImageFile(const char* fname, uint16_t x_pos, uint16_t y_pos)
       *PixBuff = RGB565(r, g, b);
 
       //свапаем пиксель
-      uint16_t temp = *PixBuff;
-      *PixBuff = *PixBuff >> 8;
-      *PixBuff |= (temp << 8);
+      *PixBuff = (*PixBuff>>8) | (*PixBuff<<8);
+
       PixBuff++;
     }
 
@@ -109,8 +110,10 @@ IMGRESULT DrawBMPImageFile(const char* fname, uint16_t x_pos, uint16_t y_pos)
   free(bmp_file_bufer);
 
   // Рисуем полученную картинку
+
   ST7789_DrawImage( x_pos, y_pos, imageWidth, imageHeight, (uint16_t*)bmp_frame_bufer );
 
   free(bmp_frame_bufer);
+
   return IMG_OK;
 }

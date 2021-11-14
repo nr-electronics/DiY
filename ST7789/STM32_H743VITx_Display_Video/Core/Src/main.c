@@ -19,6 +19,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "dma.h"
 #include "fatfs.h"
 #include "sdmmc.h"
 #include "spi.h"
@@ -105,6 +106,7 @@ int main(void)
   MX_GPIO_Init();
   MX_SPI2_Init();
   MX_SDMMC1_SD_Init();
+  MX_DMA_Init();
   MX_FATFS_Init();
   /* USER CODE BEGIN 2 */
 
@@ -254,7 +256,7 @@ int main(void)
           DrawBMPImageFile(FileInfo.fname, 0, 0);
           //ST7789_print( 150, 100, RGB565(255, 255, 255) , RGB565(0, 0, 0) , 1, &Font_11x18, 1, FileInfo.fname);
         }
-        uint32_t t2 = HAL_GetTick();
+            uint32_t t2 = HAL_GetTick();
             char text[64]; //закомментировать, если не нужна отладка
             sprintf(text,"Time: %dms",(int)(t2-t1));
             ST7789_print( 0, 0, RGB565(0, 255, 255) , RGB565(0, 0, 0) , 1, &Font_11x18, 1, text);
